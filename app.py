@@ -15,7 +15,7 @@ with st.sidebar:
 
 with tab1:
     duckdb.register("df", df)
-    sql_query = st.text_area(label="entrez votre input")
+    sql_query = st.text_area(label="ENTRE TON INPUT MYMAAAAAAN")
     result = duckdb.sql(sql_query).df()
     st.write(f"vous avez entré la query suivante: {sql_query}")
     st.dataframe(result)
