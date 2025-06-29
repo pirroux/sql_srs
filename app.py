@@ -1,32 +1,51 @@
 import streamlit as st
 import pandas as pd
 import duckdb
+import io
+csv ='''
+beverage, price
+coffee, 1.50
+tea, 1.00
+water, 0.75
+'''
 
-st.write("Hello World how are you ?")
-data = { "a": [1,2,3], "b": [4,5,6]}
-df = pd.DataFrame(data)
+beverages = pd.read_csv(io.StringIO(csv))
 
-tab1, tab2 , tab3 = st.tabs(["tab1", "tab2", "tab3"])
+csv2 = '''
+food_item, price
+cookie, 1.00
+chocolatine, 1.50
+muffin, 2.00
+'''
+food_items = pd.read_csv(io.StringIO(csv2))
 
-with st.sidebar:
-    option = st.selectbox(
-        "What would you like to work on",
-        ("Joins", "GROUPBY", "Window Functions"), index=None,
-        placeholder="select a topic..."
-    )
-    if option == "Joins":
-        st.write("You selected Joins")
+answer = """
+SELECT * FROM beverages
+CROSS JOIN food_items
+"""
 
-with tab1:
-    duckdb.register("df", df)
-    option = st.selectbox(
-        "What would you like to work on",
-        ("Joins", "GROUPBY", "Window Functions"), index=None,
-        placeholder="select a topic..."
-    )
-    if option == "Joins":
-        st.write("You selected Joins")
-    sql_query = st.text_area(label="entrez votre input")
-    result = duckdb.sql(sql_query).df()
-    st.write(f"vous avez entré la query suivante: {sql_query}")
-    st.dataframe(result)
+
+solution = duckdb.sql(answer).df()
+
+st.header("enter your query")
+query = st.text_area(label="votre_code_sql", key="query", height=200)
+if query:
+    try:
+        result = duckdb.sql(query).df()
+        st.write(result)
+    except Exception as e:
+        st.error(f"Erreur: {e}")
+
+tab2, tab3 = st.tabs(["tables", "solution"])
+
+with tab2:
+    st.write("table: beverages")
+    st.dataframe(beverages)
+    st.write("table: food_items")
+    st.dataframe(food_items)
+    st.write("expected result")
+    st.dataframe(solution)
+
+
+with tab3:
+    st.write(answer)
