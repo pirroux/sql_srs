@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import duckdb
 import io
+
+
 csv ='''
 beverage, price
 coffee, 1.50
@@ -25,7 +27,19 @@ CROSS JOIN food_items
 """
 
 
+
+
 solution = duckdb.sql(answer).df()
+
+with st.sidebar:
+    st.title("what do you want to work on?")
+    table = st.selectbox(label="tables", key="tables", options=["beverages", "food_items"])
+    if table == "beverages":
+        st.write(beverages)
+    elif table == "food_items":
+        st.write(food_items)
+    else:
+        st.write("no table selected")
 
 st.header("enter your query")
 query = st.text_area(label="votre_code_sql", key="query", height=200)
