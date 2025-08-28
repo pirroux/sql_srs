@@ -1,5 +1,6 @@
-# pylint: disable = missing-module-docstring
-
+import streamlit as st
+import pandas as pd
+import duckdb
 import io
 
 import duckdb
@@ -15,13 +16,13 @@ water, 0.75
 
 beverages = pd.read_csv(io.StringIO(CSV))
 
-CSV2 = """
+csv2 = '''
 food_item, price
 cookie, 1.00
 chocolatine, 1.50
 muffin, 2.00
-"""
-food_items = pd.read_csv(io.StringIO(CSV2))
+'''
+food_items = pd.read_csv(io.StringIO(csv2))
 
 ANSWER = """
 SELECT * FROM beverages
