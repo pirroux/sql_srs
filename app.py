@@ -1,10 +1,6 @@
 # pylint: disable = missing-module-docstring
 
 import io
-
-import duckdb
-import pandas as pd
-import streamlit as st
 import duckdb
 import pandas as pd
 import streamlit as st
@@ -15,7 +11,6 @@ coffee, 1.50
 tea, 1.00
 water, 0.75
 """
-
 
 beverages = pd.read_csv(io.StringIO(CSV))
 
@@ -72,20 +67,19 @@ if query:
         st.write("columns not in the same ORDER or are not the same as solution")
         # st.write("somethihng is odd")
 
-    # if len(results.columns) != len(solution.columns):
-    #     st.write("nombre de colomnes différentes")
+        # if len(results.columns) != len(solution.columns):
+        #     st.write("nombre de colomnes différentes")
 
-    # n_lines_diff = results.shape[0] - solution.shape[0]
-    # if n_lines_diff != 0:
-    #     st.write(" not the same lenght nigga")
+        # n_lines_diff = results.shape[0] - solution.shape[0]
+        # if n_lines_diff != 0:
+        #     st.write(" not the same lenght nigga")
 
-
-# if query:
-#     try:
-#         result = duckdb.sql(query).df()
-#         st.write(result)
-#     except Exception as e:
-#         st.error(f"Erreur: {e}")
+        # if query:
+        #     try:
+        #         result = duckdb.sql(query).df()
+        #         st.write(result)
+        #     except Exception as e:
+        #         st.error(f"Erreur: {e}")
         results = results[solution.columns]
         st.dataframe(results.compare(solution))
     except KeyError as e:
