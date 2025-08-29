@@ -4,3 +4,5 @@ venv/
 *.csv
 *.xlsx
 *.xls
+
+test_db.py
