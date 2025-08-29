@@ -1,6 +1,7 @@
 # pylint: disable = missing-module-docstring
 
 import ast
+
 import duckdb
 import streamlit as st
 
@@ -12,13 +13,13 @@ with st.sidebar:
     theme = st.selectbox(
         "what would you like to work on",
         ("cross_joins", "group_by", "window_functions"),
-        placeholder="Select a theme..."
+        placeholder="Select a theme...",
     )
     st.write("You chose:", theme)
 
     exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}' ").df()
     st.write(exercise)
-    
+
 st.header("enter your query")
 query = st.text_area(label="votre_code_sql", key="query", height=200)
 
@@ -74,9 +75,9 @@ if query:
 
 tab2, tab3 = st.tabs(["tables", "solution"])
 
-with tab2:  
+with tab2:
     exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
-    for table in exercise_tables:    
+    for table in exercise_tables:
         st.write(f"table: {table}")
         df_table = con.execute(f"SELECT * FROM {table}")
         st.dataframe(df_table)
