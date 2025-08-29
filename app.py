@@ -1,6 +1,7 @@
 # pylint: disable = missing-module-docstring
 
 import ast
+import io
 
 import duckdb
 import streamlit as st
@@ -19,9 +20,6 @@ with st.sidebar:
 
     exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}' ").df()
     st.write(exercise)
-
-st.header("enter your query")
-query = st.text_area(label="votre_code_sql", key="query", height=200)
 
 if query:
     results = con.execute(query).df()
