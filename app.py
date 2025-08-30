@@ -32,6 +32,7 @@ with st.sidebar:
         .sort_values("last_reviewed")
         .reset_index()
     )
+
     st.write(exercise)
 
     # Getting the exercise solution
@@ -72,3 +73,4 @@ with tab2:
 
 with tab3:
     st.write(answer)
+
