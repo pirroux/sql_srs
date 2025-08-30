@@ -50,6 +50,7 @@ M
 L
 XL
 """
+
 SIZES = pd.read_csv(io.StringIO(SIZES))
 con.execute("CREATE TABLE IF NOT EXISTS sizes AS SELECT * FROM sizes")
 
@@ -60,6 +61,7 @@ Asphalte
 Abercrombie
 Lewis
 """
+
 TRADEMARKS = pd.read_csv(io.StringIO(TRADEMARKS))
 con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")
 
