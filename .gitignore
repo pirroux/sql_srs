@@ -1,5 +1,7 @@
 .idea
 venv/
+answers/
+data/
 
 *.csv
 *.xlsx
