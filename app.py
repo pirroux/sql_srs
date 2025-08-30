@@ -1,11 +1,22 @@
 # pylint: disable = missing-module-docstring
+import logging
+import os
+import subprocess
 
 import duckdb
 import streamlit as st
 
-con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
+if "data" not in os.listdir():
+    print("creating folder data")
+    logging.error(os.listdir())
+    logging.error("creating folder data")
+    os.mkdir("data")
 
-# solution = duckdb.sql(ANSWER).df()
+if "exercises_sql_tables.duckdb" not in os.listdir("data"):
+    # exec(open("init_db.py").read())
+    subprocess.run(["python", "init_db.py"], check=True)
+
+con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 with st.sidebar:
     theme = st.selectbox(
@@ -15,7 +26,13 @@ with st.sidebar:
     )
     st.write("You chose:", theme)
 
-    exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}' ").df().sort_values("last_reviewed").reset_index()
+    exercise = (
+        con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}' ")
+        .df()
+        .sort_values("last_reviewed")
+        .reset_index()
+    )
+
     st.write(exercise)
 
     # Getting the exercise solution
@@ -56,4 +73,4 @@ with tab2:
 
 with tab3:
     st.write(answer)
-    
+
