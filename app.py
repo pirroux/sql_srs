@@ -24,14 +24,20 @@ with st.sidebar:
         ("cross_joins", "group_by", "window_functions"),
         placeholder="Select a theme...",
     )
-    st.write("You chose:", theme)
+
+    if theme:
+        st.write("You chose:", theme)
+        SELECT_EXERCISE_QUERY = f"SELECT * FROM memory_state WHERE theme = '{theme}' "
+    else:
+        SELECT_EXERCISE_QUERY = "SELECT * FROM memory_state"
 
     exercise = (
-        con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}' ")
+        con.execute(SELECT_EXERCISE_QUERY)
         .df()
-        .sort_values("last_reviewed")
+        .sort_values("last_reviewed", ascending=True)
         .reset_index()
     )
+
     st.write(exercise)
 
     # Getting the exercise solution
