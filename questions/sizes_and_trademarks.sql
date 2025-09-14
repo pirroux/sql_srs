@@ -1,0 +1,1 @@
+Find all the combinations of sizes and brands
