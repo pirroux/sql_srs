@@ -14,6 +14,7 @@ from typing import Optional, Tuple
 import duckdb
 import pandas as pd
 import streamlit as st
+from datetime import datetime, timedelta
 
 
 def ensure_data_directory() -> None:
@@ -175,8 +176,18 @@ def render_sidebar(connection: duckdb.DuckDBPyConnection) -> Tuple[Optional[str]
     exercises = get_exercises(connection, theme)
     st.write(exercises)
     
-    # Getting the exercise solution
-    exercise_name = exercises.loc[0, "exercise_name"]
+    # Initialize session state for current exercise
+    if "current_exercise" not in st.session_state:
+        st.session_state.current_exercise = exercises.loc[0, "exercise_name"]
+    
+    # Get the current exercise (either from session state or first in list)
+    exercise_name = st.session_state.current_exercise
+    
+    # Verify the exercise still exists in current exercises
+    if exercise_name not in exercises["exercise_name"].values:
+        exercise_name = exercises.loc[0, "exercise_name"]
+        st.session_state.current_exercise = exercise_name
+    
     answer = load_exercise_solution(exercise_name)
     solution_df = connection.execute(answer).df()
     
@@ -253,7 +264,17 @@ def render_solution_tab(solution_sql: str) -> None:
     """
     st.write(solution_sql)
 
-
+def reset_srs(connection: duckdb.DuckDBPyConnection) -> None:
+    """
+    Reset the SRS (Spaced Repetition System) for a given exercise.
+    
+    Args:
+        connection: Database connection object
+    """
+    connection.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01' ")
+    st.rerun()
+    
+        
 # Main application logic
 def main() -> None:
     """Main application entry point."""
@@ -268,23 +289,45 @@ def main() -> None:
     with st.sidebar:
         theme, exercises, exercise_name, solution_df = render_sidebar(connection)
     
-    # Render query input with question
-    query = render_query_input(exercise_name)
+    # Create two columns
+    col1, col2 = st.columns([1,1])
     
-    # Render query results and validation
-    render_query_results(connection, query, solution_df)
+    with col1:
+        # Render query input with question
+        query = render_query_input(exercise_name)
+        
+        # Render query results and validation
+        render_query_results(connection, query, solution_df)
+        
+        #render space repetition system buttons
+        for n_days in [2, 7, 21]:
+            if st.button(f"Revoir dans {n_days} jours"):
+                next_review = datetime.today() + timedelta(days=n_days)
+                connection.execute(f"UPDATE memory_state SET last_reviewed = '{next_review}' WHERE exercise_name = '{exercise_name}'")
+                # Update session state to keep the same exercise
+                st.session_state.current_exercise = exercise_name
+                st.rerun()
+        
+        if st.button("Reset"):
+            reset_srs(connection)
+
+        # Render tabs
+        tab1, tab2 = st.tabs(["Exercise", "Display Solution"])
+        
+        with tab1:
+            st.write(" ")
+        
+        with tab2:
+            solution_sql = load_exercise_solution(exercise_name)
+            render_solution_tab(solution_sql)
     
-    # Render tabs
-    tab2, tab3 = st.tabs(["Tables", "Solution"])
-    
-    with tab2:
+    with col2:
+        # Render tables in the right column
+        st.header("Tables")
         render_tables_tab(exercises, connection)
+
     
-    with tab3:
-        solution_sql = load_exercise_solution(exercise_name)
-        render_solution_tab(solution_sql)
-
-
+            
 if __name__ == "__main__":
     main()
 
